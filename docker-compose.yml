@@ -1,0 +1,39 @@
+version: '3.7'
+services:
+  postgres:
+    image: 'postgres:11-alpine'
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USERNAME: postgres
+      POSTGRES_PASSWORD: postgres
+
+  redis:
+    image: "redis:5.0-alpine"
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MIX_ENV: dev
+
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      MIX_ENV: dev
+      PGUSER: "postgres"
+      PGPASS: "postgres"
+      PGHOST: "postgres"
+      PGPORT: "5432"
+    ports:
+      - '4000:4000'
+    volumes:
+      - .:/app
+    links:
+      - postgres
+      - redis
