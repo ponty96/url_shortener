@@ -10,6 +10,10 @@ use Mix.Config
 config :url_shortener,
   ecto_repos: [UrlShortener.Repo]
 
+config :url_shortener, UrlShortener.Repo,
+  migration_primary_key: [type: :binary_id, autogenerate: false],
+  migration_timestamps: [type: :utc_datetime_usec]
+
 # Configures the endpoint
 config :url_shortener, UrlShortenerWeb.Endpoint,
   url: [host: "localhost"],
