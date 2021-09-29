@@ -18,14 +18,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      args:
-        MIX_ENV: dev
 
     depends_on:
       - postgres
       - redis
     environment:
-      MIX_ENV: dev
       PGUSER: "postgres"
       PGPASS: "postgres"
       PGHOST: "postgres"
