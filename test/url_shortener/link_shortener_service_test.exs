@@ -103,7 +103,6 @@ defmodule UrlShortener.LinkShortenerServiceTest do
       initial_link_hit =
         Factory.insert(:link_hit, short_url_id: short_url.id, user_id: short_url.user_id)
 
-
       number_of_lookups = Enum.random(2..99)
 
       for _lookup <- 1..number_of_lookups do

@@ -17,6 +17,13 @@ defmodule UrlShortenerWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+    get "/:slug", URLShortenerController, :show
+  end
+
+  scope "/api", UrlShortenerWeb do
+    pipe_through :api
+
+    resources "/shorten_url", URLShortenerController, only: [:create]
   end
 
   # Other scopes may use custom stacks.
