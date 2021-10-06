@@ -95,6 +95,10 @@ jobs:
       #   run: mix phx.server
 
       - name: Run Cypress test
-        working-directory: ./assets
-        run: npx cypress run
+        run: |
+          mix phx.server &
+          sleep 10 &&
+          cd assets &&
+          npm run test
+
 

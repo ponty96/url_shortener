@@ -16,7 +16,7 @@ config :url_shortener, UrlShortener.Repo,
 # you can enable the server option below.
 config :url_shortener, UrlShortenerWeb.Endpoint,
   http: [port: 4000],
-  server: true
+  server: false
 
 # Print only warnings and errors during test
 config :logger, level: :warn
