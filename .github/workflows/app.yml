@@ -78,7 +78,7 @@ jobs:
       # Compile mix dependencies if the _build folder was not cached
       - name: Compile Mix Dependencies
         if: steps.build-cache.outputs.cache-hit != 'true'
-        run: MIX_ENV=test mix deps.compile mime && mix deps.compile
+        run: MIX_ENV=test mix deps.clean mime && mix deps.compile
 
       # Run the tests
       - name: Run Tests
