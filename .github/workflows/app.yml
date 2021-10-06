@@ -89,7 +89,7 @@ jobs:
         run: mix ecto.setup
 
       - name: Install os tools
-        run: apt-get install -y inotify-tools
+        run: sudo apt-get install -y inotify-tools
 
       - name: Start Phoenix App
         run: mix phx.server
