@@ -4,25 +4,46 @@
   "license": "MIT",
   "scripts": {
     "deploy": "webpack --mode production",
-    "watch": "webpack --mode development --watch"
+    "watch": "webpack --mode development --watch",
+    "build": "webpack --progress --mode development"
   },
   "dependencies": {
-    "phoenix": "file:../deps/phoenix",
-    "phoenix_html": "file:../deps/phoenix_html"
+    "@types/clipboardy": "^2.0.1",
+    "@types/faker": "^5.5.8",
+    "@types/uuid": "^8.3.1",
+    "clipboardy": "^2.3.0",
+    "cypress": "^8.5.0",
+    "faker": "^5.5.3",
+    "phoenix": "^1.6.0",
+    "phoenix_html": "^3.0.4",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-toastify": "^8.0.3",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
+    "@bahmutov/add-typescript-to-cypress": "^2.1.2",
+    "@cypress/react": "^5.10.1",
+    "@cypress/webpack-dev-server": "^1.6.0",
+    "@cypress/webpack-preprocessor": "^5.9.1",
+    "@types/phoenix": "^1.5.2",
+    "@types/react": "^17.0.27",
+    "@types/react-dom": "^17.0.9",
     "babel-loader": "^8.0.0",
     "copy-webpack-plugin": "^5.1.1",
     "css-loader": "^3.4.2",
-    "sass-loader": "^8.0.2",
-    "node-sass": "^4.13.1",
     "hard-source-webpack-plugin": "^0.13.1",
     "mini-css-extract-plugin": "^0.9.0",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
+    "sass": "^1.32.12",
+    "sass-loader": "^8.0.2",
+    "source-map-loader": "^3.0.0",
     "terser-webpack-plugin": "^2.3.2",
-    "webpack": "^4.41.5",
-    "webpack-cli": "^3.3.2"
+    "ts-loader": "^9.2.6",
+    "typescript": "^4.4.3",
+    "webpack": "^5.56.1",
+    "webpack-cli": "^4.8.0"
   }
 }

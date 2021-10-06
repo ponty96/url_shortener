@@ -1,0 +1,13 @@
+{
+  "baseUrl": "http://localhost:4000",
+  "defaultCommandTimeout": 10000,
+  "experimentalNetworkStubbing": true,
+  "chromeWebSecurity": false,
+  "viewportWidth": 1200,
+  "viewportHeight": 760,
+  "testFiles": "**/*.spec.{js,ts,jsx,tsx}",
+  "component": {
+    "testFiles": "**/*.spec.{js,ts,jsx,tsx}",
+    "componentFolder": "js"
+  }
+}
