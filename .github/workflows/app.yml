@@ -85,6 +85,9 @@ jobs:
         run: mix test
 
       # Run Cypress test
+      - name: Setup Database
+        run: mix ecto.setup
+
       - name: Start Phoenix App
         run: mix phx.server
 
