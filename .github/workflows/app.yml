@@ -88,6 +88,9 @@ jobs:
       - name: Setup Database
         run: mix ecto.setup
 
+      - name: Install os tools
+        run: apt-get install -y inotify-tools
+
       - name: Start Phoenix App
         run: mix phx.server
 
