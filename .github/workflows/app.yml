@@ -85,5 +85,5 @@ jobs:
         run: mix test
 
       # Run Cypress test
-      - name: Start Phoenix App
+      # - name: Start Phoenix App
 
