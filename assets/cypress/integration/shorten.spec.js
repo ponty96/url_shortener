@@ -55,10 +55,7 @@ describe('Shortener', () => {
           .should('eq', 301)
       })
 
-    cy.get('button').contains('Copy').click().should(() => {
-      // TODO
-      // Validate that it copied
-    })
+    cy.get('button').contains('Copy').click()
   });
 
   it('the success page buttons work as expected', () => {
@@ -73,7 +70,7 @@ describe('Shortener', () => {
       cy.get('input[type="submit"]').should('have.value', 'Make LittleURL!') // Only yield textareas within form
     })
 
-    // TODO stub the request here
+    // Stub the request
     const URL_INPUT = Faker.internet.url()
 
     const expectedShortenUrl = "https://localhost:4000/dioeHDue"

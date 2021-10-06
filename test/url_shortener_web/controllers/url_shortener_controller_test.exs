@@ -50,7 +50,9 @@ defmodule UrlShortenerWeb.URLShortenerControllerTest do
                |> Phoenix.ConnTest.redirected_to(301)
     end
 
-    test "error: returns a 404 content when a short_url record matching the slug is not found", %{conn: conn} do
+    test "error: returns a 404 content when a short_url record matching the slug is not found", %{
+      conn: conn
+    } do
       slug = "bad_slug"
 
       response =

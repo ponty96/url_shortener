@@ -5,8 +5,11 @@ defmodule UrlShortener.LinkShortenerService do
   alias UrlShortener.ShortUrl
   alias UrlShortener.ShortUrlService
 
+  use Appsignal.Instrumentation.Decorators
+
   @five_retries [0, 0, 0, 0]
 
+  @decorate transaction_event()
   @spec shorten_link(Ecto.UUID.t(), String.t()) :: {:ok, String.t()} | {:error, Atom.t()}
   def shorten_link(user_id, long_url) do
     with_retries(@five_retries, fn ->
@@ -15,23 +18,26 @@ defmodule UrlShortener.LinkShortenerService do
              ShortUrlService.insert_short_url(user_id, long_url, slug) do
         {:ok, short_url}
       else
-        # Async Metric counter, like AppSignal, to track how often we fail
-        # counter should be grouped into
-        # invalid_link
-        # duplicate_record
-        # existing
         {:error, :existing} ->
-          # call metric counter fn here
+          Appsignal.increment_counter("generate_short_link_failed", 1, %{
+            reason: :existing
+          })
+
           {:retry, {:error, :existing}}
 
         {:error, error} ->
           Logger.error("failed to shortened url. reason: #{inspect(error)}")
-          # call metric counter fn here
+
+          Appsignal.increment_counter("generate_short_link_failed", 1, %{
+            reason: error
+          })
+
           {:error, error}
       end
     end)
   end
 
+  @decorate transaction_event()
   @spec lookup(String.t()) :: {:ok, String.t()} | {:error, Atom.t()}
   def lookup(slug) do
     {:ok, sup} = Task.Supervisor.start_link()
@@ -77,9 +83,8 @@ defmodule UrlShortener.LinkShortenerService do
           Logger.warn("#{inspect(message)}. All retries failed. 0 retries left.")
           {:error, message}
         else
-          # call a counter to see how often we have to retry to generate a slug
-          # we should maybe use a guage for this?
-          # increment_counter("generate_slug_retries")
+          Appsignal.increment_counter("generate_slug_retries")
+
           Logger.warn(
             "#{inspect(message)}. Attempting retry to generate a unique slug #{length(retries)} retries left."
           )

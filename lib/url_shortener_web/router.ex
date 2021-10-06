@@ -14,9 +14,11 @@ defmodule UrlShortenerWeb.Router do
   end
 
   scope "/", UrlShortenerWeb do
+    import Phoenix.LiveDashboard.Router
+
     pipe_through :browser
 
-    get "/", PageController, :index
+    live_dashboard "/dashboard", metrics: UrlShortenerWeb.Telemetry
     get "/:slug", URLShortenerController, :show
   end
 

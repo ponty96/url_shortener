@@ -1,6 +1,8 @@
 defmodule UrlShortenerWeb.URLShortenerController do
   use UrlShortenerWeb, :controller
 
+  use Appsignal.Instrumentation.Decorators
+
   alias UrlShortenerWeb.Validators.URLShortenerParams
   alias UrlShortener.LinkShortenerService
 

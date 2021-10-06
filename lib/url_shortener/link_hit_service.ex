@@ -25,7 +25,6 @@ defmodule UrlShortener.LinkHitService do
       on_conflict:
         from(entity in LinkHit,
           where: entity.short_url_id == ^short_url_id,
-          # TODO increment hits here
           update: [set: [hits: entity.hits + 1]]
         )
     )
