@@ -1,0 +1,89 @@
+name: app
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      db:
+        image: postgres:latest
+        ports: ["5432:5432"]
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-elixir@v1.0.0
+        with:
+          otp-version: 22.0
+          elixir-version: 1.9.4
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 16
+      - name: Install chromedriver
+        run: |
+          wget https://chromedriver.storage.googleapis.com/78.0.3904.105/chromedriver_linux64.zip
+          unzip chromedriver_linux64.zip
+          sudo mv chromedriver /usr/bin/chromedriver
+          sudo chown root:root /usr/bin/chromedriver
+          sudo chmod +x /usr/bin/chromedriver
+      # Cache NPM packages
+      - name: Retrieve NPM Packages Cache
+        uses: actions/cache@v1
+        id: npm-cache
+        with:
+          path: assets/node_modules
+          key: ${{ runner.os }}-npm-${{ hashFiles(format('{0}{1}', github.workspace, '/assets/package-lock.json')) }}
+
+      # Install NPM Packages only if cache was not hit
+      - name: Install NPM Packages
+        if: steps.npm-cache.outputs.cache-hit != 'true'
+        run: npm install --prefix assets
+
+      # Cache Mix Dependencies based on mix.lock
+      - name: Retrieve Mix Dependencies Cache
+        uses: actions/cache@v1
+        id: mix-cache
+        with:
+          path: deps
+          key: ${{ runner.os }}-mix-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
+
+      # Get Mix Dependencies only if cache was not hit
+      - name: Install Mix Dependencies
+        if: steps.mix-cache.outputs.cache-hit != 'true'
+        run: |
+          mix local.rebar --force
+          mix local.hex --force
+          mix deps.get
+      # Compile and deploy assets to priv
+      - name: Deploy assets
+        run: npm run deploy --prefix ./assets
+
+      # Cache the _build folder
+      - name: Retrieve Build Cache
+        uses: actions/cache@v1
+        id: build-cache
+        with:
+          path: _build
+          key: ${{ runner.os }}-build-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
+
+      # Compile mix dependencies if the _build folder was not cached
+      - name: Compile Mix Dependencies
+        if: steps.build-cache.outputs.cache-hit != 'true'
+        run: MIX_ENV=test mix deps.compile
+
+      # Run the tests
+      - name: Run Tests
+        run: mix test
+
+      # Run Cypress test
+      - name: Start Phoenix App
+
