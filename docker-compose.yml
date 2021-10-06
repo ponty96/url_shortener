@@ -8,12 +8,6 @@ services:
       POSTGRES_USERNAME: postgres
       POSTGRES_PASSWORD: postgres
 
-  redis:
-    image: "redis:5.0-alpine"
-    ports:
-      - "6379:6379"
-    command: ["redis-server", "--appendonly", "yes"]
-
   web:
     build:
       context: .
@@ -21,8 +15,8 @@ services:
 
     depends_on:
       - postgres
-      - redis
     environment:
+      APPSIGNAL_BUILD_FOR_MUSL: 1
       PGUSER: "postgres"
       PGPASS: "postgres"
       PGHOST: "postgres"
@@ -33,4 +27,3 @@ services:
       - .:/app
     links:
       - postgres
-      - redis

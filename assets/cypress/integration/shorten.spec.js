@@ -52,7 +52,7 @@ describe('Shortener', () => {
       .then(link => {
         cy.request(link.prop('href'))
           .its('status')
-          .should('eq', 301)
+          .should('eq', 200)
       })
 
     cy.get('button').contains('Copy').click()

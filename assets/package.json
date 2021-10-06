@@ -5,7 +5,8 @@
   "scripts": {
     "deploy": "webpack --mode production",
     "watch": "webpack --mode development --watch",
-    "build": "webpack --progress --mode development"
+    "build": "webpack --progress --mode development",
+    "test": "npm i && cypress run"
   },
   "dependencies": {
     "@types/clipboardy": "^2.0.1",
@@ -24,7 +25,6 @@
   "devDependencies": {
     "@babel/core": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
-    "@bahmutov/add-typescript-to-cypress": "^2.1.2",
     "@cypress/react": "^5.10.1",
     "@cypress/webpack-dev-server": "^1.6.0",
     "@cypress/webpack-preprocessor": "^5.9.1",

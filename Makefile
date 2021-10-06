@@ -21,7 +21,9 @@ server:
 # `make test` will be used after `make setup` in order to run
 # your test suite.
 test:
+	MIX_ENV=test mix ecto.setup
 	MIX_ENV=test mix test
+	cd assets && npm run test
 
 run-infra: #: Start up all the containers to test locally
 	@./start-deps.sh

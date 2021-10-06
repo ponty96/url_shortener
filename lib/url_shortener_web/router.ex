@@ -20,6 +20,7 @@ defmodule UrlShortenerWeb.Router do
 
     live_dashboard "/dashboard", metrics: UrlShortenerWeb.Telemetry
     get "/:slug", URLShortenerController, :show
+    get "/", PageController, :index
   end
 
   scope "/api", UrlShortenerWeb do

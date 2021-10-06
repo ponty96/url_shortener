@@ -48,7 +48,6 @@ wait_for_service() {
 
 # Services we need to have up and running before continuing with the build
 wait_for_service 5432 localhost "Postgres" postgres
-wait_for_service 6379 localhost "Redis" redis
 
 echo "***"
 echo "Dependencies all started"
