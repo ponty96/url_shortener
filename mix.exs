@@ -49,7 +49,10 @@ defmodule UrlShortener.MixProject do
       {:faker, "~> 0.16", only: :test},
       {:ex_machina, "~> 2.4", only: [:test]},
       {:appsignal, "~> 2.0"},
-      {:appsignal_phoenix, "~> 2.0.0"}
+      {:appsignal_phoenix, "~> 2.0.0"},
+
+      # force mime
+      {:mime, "~> 1.6.0"}
     ]
   end
 
