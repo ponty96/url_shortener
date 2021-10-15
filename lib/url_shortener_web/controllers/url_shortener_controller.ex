@@ -5,6 +5,7 @@ defmodule UrlShortenerWeb.URLShortenerController do
 
   alias UrlShortenerWeb.Validators.URLShortenerParams
   alias UrlShortener.LinkShortenerService
+  alias UrlShortener.Errors.ResourceNotFoundError
 
   action_fallback UrlShortenerWeb.FallbackController
 
@@ -27,7 +28,7 @@ defmodule UrlShortenerWeb.URLShortenerController do
         |> put_status(301)
         |> redirect(external: short_url.long_url)
 
-      {:error, :resource_not_found} ->
+      {:error, %ResourceNotFoundError{}} ->
         conn
         |> put_status(404)
         |> render("404.html")

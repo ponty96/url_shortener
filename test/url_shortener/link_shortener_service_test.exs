@@ -1,10 +1,11 @@
 defmodule UrlShortener.LinkShortenerServiceTest do
   use UrlShortener.DataCase
 
+  alias UrlShortener.Errors.LinkShortenerError
   alias UrlShortener.Factory
   alias UrlShortener.LinkHit
-  alias UrlShortener.Repo
   alias UrlShortener.LinkShortenerService
+  alias UrlShortener.Repo
   import ExUnit.CaptureLog
 
   describe "shorten_link/2" do
@@ -29,11 +30,11 @@ defmodule UrlShortener.LinkShortenerServiceTest do
 
       logs =
         capture_log(fn ->
-          assert {:error, :duplicate} =
+          assert {:error, %LinkShortenerError{}} =
                    LinkShortenerService.shorten_link(user_id, existing_long_url)
         end)
 
-      assert String.contains?(logs, "failed to shortened url. reason: :duplicate")
+      assert String.contains?(logs, "Failed to shortened url due to: duplicate")
     end
 
     for invalid_link <- ["ayo.aregbede@gmail.com", "text here", ""] do
@@ -43,11 +44,11 @@ defmodule UrlShortener.LinkShortenerServiceTest do
 
         logs =
           capture_log(fn ->
-            assert {:error, :invalid_link} =
+            assert {:error, %LinkShortenerError{}} =
                      LinkShortenerService.shorten_link(user_id, invalid_link)
           end)
 
-        assert String.contains?(logs, "failed to shortened url. reason: :invalid")
+        assert String.contains?(logs, "Failed to shortened url due to: invalid")
       end
     end
   end
@@ -70,7 +71,7 @@ defmodule UrlShortener.LinkShortenerServiceTest do
     for invalid_link <- ["ayo.aregbede@gmail.com", "text here", ""] do
       test "failure: it returns an error when passed an invalid url like #{invalid_link}" do
         invalid_link = unquote(invalid_link)
-        assert {:error, :invalid_link} = LinkShortenerService.generate_slug(invalid_link)
+        assert {:error, %LinkShortenerError{}} = LinkShortenerService.generate_slug(invalid_link)
       end
     end
   end

@@ -1,4 +1,6 @@
 defmodule UrlShortener.ShortUrlService do
+  alias UrlShortener.Errors.LinkShortenerError
+  alias UrlShortener.Errors.ResourceNotFoundError
   alias UrlShortener.ShortUrl
   alias UrlShortener.Repo
 
@@ -23,28 +25,33 @@ defmodule UrlShortener.ShortUrlService do
   end
 
   @spec find_long_url(String.t()) ::
-          {:ok, ShortUrl.t()} | {:error, :resource_not_found}
+          {:ok, ShortUrl.t()} | {:error, ResourceNotFoundError.t()}
   def find_long_url(slug) when is_binary(slug) do
     query =
       from short_url in ShortUrl,
         where: short_url.slug == ^slug
 
     case Repo.all(query) do
-      [] -> {:error, :resource_not_found}
+      [] -> {:error, ResourceNotFoundError.exception(resource: "slug", id: slug)}
       [short_url] -> {:ok, short_url}
     end
   end
 
   @spec get_error_from_changeset(Ecto.Changeset.t()) ::
-          {:error, :existing} | {:error, :duplicate} | {:error, Ecto.Changeset.t()}
+          {:error, LinkShortenerError.t()} | {:error, Ecto.Changeset.t()}
   defp get_error_from_changeset(changeset) when is_map(changeset) do
     # I added this function on my flight coding with no internet to explore better ways
     # I doubt I'd come back to change this before submission.
     # I'd love if you could ignore this or ask me if I have an alternative approach on our call
     case UrlShortener.Schema.errors_on(changeset) do
-      %{slug: ["has already been taken"]} -> {:error, :existing}
-      %{user_id: ["duplicate long_url"]} -> {:error, :duplicate}
-      %{slug: ["should be at most 10 character(s)"]} -> {:error, changeset}
+      %{slug: ["has already been taken"]} ->
+        {:error, LinkShortenerError.exception(reason: :existing)}
+
+      %{user_id: ["duplicate long_url"]} ->
+        {:error, LinkShortenerError.exception(reason: :duplicate)}
+
+      %{slug: ["should be at most 10 character(s)"]} ->
+        {:error, changeset}
     end
   end
 end
