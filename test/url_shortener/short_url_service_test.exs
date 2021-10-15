@@ -1,9 +1,11 @@
 defmodule UrlShortener.ShortUrlServiceTest do
   use UrlShortener.DataCase
+  alias UrlShortener.Errors.LinkShortenerError
+  alias UrlShortener.Errors.ResourceNotFoundError
+  alias UrlShortener.Factory
   alias UrlShortener.ShortUrl
   alias UrlShortener.ShortUrlService
   alias UrlShortener.Repo
-  alias UrlShortener.Factory
 
   # insert_short_url(user_id, long_url, slug)
   describe "insert_short_url/3" do
@@ -34,7 +36,7 @@ defmodule UrlShortener.ShortUrlServiceTest do
     end
 
     # this is the catch all duplicate slug test
-    test "failure: it return an {:error, :existing} when we attempt to insert record with a matching slug with a different long url in the datastorage ignoring the user_id with duplicating the record" do
+    test "failure: it return an {:error, %LinkShortenerError{}} when we attempt to insert record with a matching slug with a different long url in the datastorage ignoring the user_id with duplicating the record" do
       existing_slug = "existing"
       long_url_1 = "https://google.com"
       long_url_2 = "https://stord.com"
@@ -42,7 +44,7 @@ defmodule UrlShortener.ShortUrlServiceTest do
 
       Factory.insert(:short_url, slug: existing_slug, long_url: long_url_1)
 
-      assert {:error, :existing} =
+      assert {:error, %LinkShortenerError{}} =
                ShortUrlService.insert_short_url(user_id, long_url_2, existing_slug)
 
       # assert that Repo.get_by returns a schema
@@ -50,14 +52,14 @@ defmodule UrlShortener.ShortUrlServiceTest do
       assert %ShortUrl{} = Repo.get_by(ShortUrl, slug: existing_slug)
     end
 
-    test "failure: it returns {:error, :duplicate} when we attempt to insert duplicate long_url for the same user" do
+    test "failure: it returns {:error, %LinkShortenerError{}} when we attempt to insert duplicate long_url for the same user" do
       existing_long_url = "https://google.com"
       user_id = Ecto.UUID.generate()
       slug = "ayomide"
 
       Factory.insert(:short_url, user_id: user_id, long_url: existing_long_url)
 
-      assert {:error, :duplicate} =
+      assert {:error, %LinkShortenerError{}} =
                ShortUrlService.insert_short_url(user_id, existing_long_url, slug)
 
       # assert that Repo.get_by returns a schema
@@ -85,7 +87,7 @@ defmodule UrlShortener.ShortUrlServiceTest do
       non_existing_slug = "ayomide"
       _decoy_short_url = Factory.insert(:short_url)
 
-      assert {:error, :resource_not_found} = ShortUrlService.find_long_url(non_existing_slug)
+      assert {:error, %ResourceNotFoundError{}} = ShortUrlService.find_long_url(non_existing_slug)
     end
   end
 end

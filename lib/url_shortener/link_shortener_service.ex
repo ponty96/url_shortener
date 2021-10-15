@@ -1,6 +1,7 @@
 defmodule UrlShortener.LinkShortenerService do
   require Logger
   @slug_length 10
+  alias UrlShortener.Errors.LinkShortenerError
   alias UrlShortener.LinkHitService
   alias UrlShortener.ShortUrl
   alias UrlShortener.ShortUrlService
@@ -18,7 +19,7 @@ defmodule UrlShortener.LinkShortenerService do
              ShortUrlService.insert_short_url(user_id, long_url, slug) do
         {:ok, short_url}
       else
-        {:error, :existing} ->
+        {:error, %LinkShortenerError{reason: :existing}} ->
           Appsignal.increment_counter("generate_short_link_failed", 1, %{
             reason: :existing
           })
@@ -26,12 +27,7 @@ defmodule UrlShortener.LinkShortenerService do
           {:retry, {:error, :existing}}
 
         {:error, error} ->
-          Logger.error("failed to shortened url. reason: #{inspect(error)}")
-
-          Appsignal.increment_counter("generate_short_link_failed", 1, %{
-            reason: error
-          })
-
+          log_error(error)
           {:error, error}
       end
     end)
@@ -53,11 +49,11 @@ defmodule UrlShortener.LinkShortenerService do
     end
   end
 
-  @spec generate_slug(String.t()) :: {:ok, String.t()} | {:error, :invalid_link}
+  @spec generate_slug(String.t()) :: {:ok, String.t()} | {:error, LinkShortenerError.t()}
   def generate_slug(url) do
     case URI.parse(url) do
       %URI{authority: nil} ->
-        {:error, :invalid_link}
+        {:error, LinkShortenerError.exception([reason: :invalid])}
 
       _ ->
         slug = generate()
@@ -96,6 +92,17 @@ defmodule UrlShortener.LinkShortenerService do
 
       valid_response ->
         valid_response
+    end
+  end
+
+  defp log_error(exception) do
+    Logger.error("#{inspect(exception.message)}")
+
+    try do
+      raise exception
+    catch
+      kind, reason ->
+        Appsignal.send_error(kind, reason, __STACKTRACE__)
     end
   end
 end
